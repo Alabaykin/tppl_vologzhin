@@ -6,12 +6,19 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from src.stack_machine import StackMachine
 
 
-def main():
-    if len(sys.argv) < 2:
+def main(argv: list[str] | None = None) -> int:
+    args = sys.argv if argv is None else argv
+    if len(args) < 2:
         print("Похоже, вы не передали выражение для вычисления.")
-        sys.exit(1)
+        print('Пример: python main.py "3 0 4 ~ 2 ~"')
+        return 1
 
-    expression = " ".join(sys.argv[1:])
+    if len(args) > 2 or " " not in args[1].strip():
+        print("Пожалуйста, передайте выражение в кавычках.")
+        print('Пример: python main.py "3 0 4 ~ 2 ~"')
+        return 1
+
+    expression = args[1]
 
     print(f"Вычисляем выражение: '{expression}'")
     print("Состояние стека на каждом шаге:")
@@ -20,18 +27,19 @@ def main():
     try:
         result = machine.calculate(verbose=True)
         print(f"\n{expression} = {result}")
+        return 0
     except ZeroDivisionError as e:
-        print(f"\nВозникла ошибка вычислений: {e}")
-        print("Убедитесь, что в операции деления делитель не равен нулю.")
-        sys.exit(1)
+        print(f"\nОшибка вычислений: {e}")
+        return 1
     except ValueError as e:
-        print(f"\nЗамечена неточность в выражении: {e}")
-        print("Перепроверьте операнды и операторы.")
-        sys.exit(1)
-    except Exception as e:
-        print(f"\nПроизошла неожиданная ошибка: {e}")
-        sys.exit(1)
+        print(f"\nОшибка в выражении: {e}")
+        return 1
+    except Exception as e:  # pragma: no cover
+        print(f"\nНеожиданная ошибка: {e}")
+        return 1
 
 
-if __name__ == "__main__":
-    main()
+if __name__ == "__main__": # pragma: no cover
+    exit_code = main()
+    if exit_code != 0:
+        sys.exit(exit_code)

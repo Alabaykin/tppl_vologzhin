@@ -1,3 +1,4 @@
+from pathlib import Path
 
 
 class StackMachine:
@@ -53,6 +54,15 @@ class StackMachine:
                     else:
                         self.stack.append(int(token))
                 except ValueError:
+                    if "/" in token or "\\" in token:
+                        raise ValueError(
+                            f"Токен '{token}' похож на путь. Оберните выражение в кавычки, чтобы '~' не раскрывался."
+                        )
+                    package_dir = Path(__file__).resolve().parent.parent
+                    if Path(token).exists() or (package_dir / token).exists():
+                        raise ValueError(
+                            f"Токен '{token}' похож на имя файла. Оберните выражение в кавычки, чтобы '*' не раскрывался."
+                        )
                     raise ValueError(
                         f"Неизвестный токен '{token}'. Поддерживаются только числа и операторы: {', '.join(sorted(self.OPERATORS))}."
                     )
