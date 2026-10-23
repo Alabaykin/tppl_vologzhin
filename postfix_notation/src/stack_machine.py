@@ -48,7 +48,7 @@ class StackMachine:
                             self.stack.clear()
                             self.stack.append(total ** 2)
                     case "!":
-			self.stack.append(l ** r)
+                        self.stack.append(l ** r)
             else:
                 try:
                     if "." in token:
